@@ -1,0 +1,33 @@
+http:
+  routers:
+    guacamole:
+      rule: "PathPrefix(`/guacamole`)"
+      service: guacamole
+      entryPoints:
+        - websecure
+      middlewares:
+        - guacamole-headers
+        - guacamole-buffers
+      tls: {}
+
+  services:
+    guacamole:
+      loadBalancer:
+        servers:
+          - url: "http://<IP>:8081/guacamole"
+
+  middlewares:
+    guacamole-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-For: "{remoteip}"
+          Upgrade: "websocket"
+          Connection: "Upgrade"
+        frameDeny: false
+
+    guacamole-buffers:
+      buffering:
+        maxRequestBodyBytes: 0
+        memRequestBodyBytes: 131072
+        maxResponseBodyBytes: 0
+        memResponseBodyBytes: 524288

@@ -1,0 +1,42 @@
+http:
+  routers:
+    edulution-sogo-mail:
+      rule: "PathPrefix(`/sogo-mail`)"
+      service: edulution-sogo
+      tls: {}
+      middlewares:
+        - strip-sogo-mail-prefix
+
+    edulution-sogo:
+      rule: "PathPrefix(`/SOGo`)"
+      service: edulution-sogo
+      tls: {}
+      middlewares:
+        - sogo-headers
+        - sogo-buffers
+
+  middlewares:
+    strip-sogo-mail-prefix:
+      stripPrefix:
+        prefixes:
+          - "/sogo-mail"
+    sogo-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+        frameDeny: false
+        customResponseHeaders:
+          X-Frame-Options: "ALLOWALL"
+    sogo-buffers:
+      buffering:
+        maxRequestBodyBytes: 0
+        memRequestBodyBytes: 131072
+        maxResponseBodyBytes: 0
+        memResponseBodyBytes: 524288
+        retryExpression: "IsNetworkError() && Attempts() <= 2"
+
+  services:
+    edulution-sogo:
+      loadBalancer:
+        servers:
+          - url: "http://nginx/"
