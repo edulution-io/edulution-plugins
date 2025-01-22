@@ -1,7 +1,7 @@
 services:
-  veyon-webapi-proxy:
+  edulution-veyon:
     image: veyon/webapi-proxy:4.9.1.12
-    container_name: veyon-webapi-proxy
+    container_name: edulution-veyon
     ports:
       - "11080:11080"
     restart: always
