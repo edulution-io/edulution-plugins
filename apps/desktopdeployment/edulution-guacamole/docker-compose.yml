@@ -33,7 +33,7 @@ services:
       - guacdb
       - guacd
     volumes:
-      - ./data/apps/desktopdeployment/edulution-guacamole/config:/home/guacamole
+      - /srv/docker/edulution-ui/data/apps/desktopdeployment/edulution-guacamole/config:/home/guacamole
 
 volumes:
   guacdb-data:
