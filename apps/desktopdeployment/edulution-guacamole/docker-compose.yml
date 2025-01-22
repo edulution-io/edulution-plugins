@@ -1,5 +1,5 @@
 services:
-  edulution-guacdb:
+  edulution-guacamoledb:
     container_name: edulution-guacamoledb
     image: mariadb:10.11.10
     restart: unless-stopped
@@ -30,8 +30,8 @@ services:
       MYSQL_PASSWORD: <YOUR_PASSWORD>
       TOTP_ENABLED: "false"
     depends_on:
-      - guacdb
-      - guacd
+      - edulution-guacamoledb
+      - edulution-guacd
     volumes:
       - /srv/docker/edulution-ui/data/apps/desktopdeployment/edulution-guacamole/config:/home/guacamole
 
