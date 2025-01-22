@@ -1,7 +1,7 @@
 services:
   edulution-guacdb:
     container_name: edulution-guacamoledb
-    image: mariadb:10.11.8
+    image: mariadb:10.11.10
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: <YOUR_ROOT_PASSWORD>
@@ -9,16 +9,16 @@ services:
       MYSQL_USER: "guacamole_user"
       MYSQL_PASSWORD: <YOUR_PASSWORD>
     volumes:
-      - "./db-data:/var/lib/mysql"
+      - guacdb-data:/var/lib/mysql
 
   edulution-guacd:
     container_name: edulution-guacd
-    image: guacamole/guacd:latest
+    image: guacamole/guacd:1.5.5
     restart: unless-stopped
 
   edulution-guacamole:
     container_name: edulution-guacamole
-    image: guacamole/guacamole:latest
+    image: guacamole/guacamole:1.5.5
     restart: unless-stopped
     ports:
       - 8081:8080
@@ -33,7 +33,10 @@ services:
       - guacdb
       - guacd
     volumes:
-      - /srv/docker/guacamole/config:/home/guacamole
+      - ./config:/home/guacamole
 
 volumes:
-  db-data:
+  guacdb-data:
+
+networks:
+  edulution-ui_default:

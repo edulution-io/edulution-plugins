@@ -5,3 +5,6 @@ services:
     ports:
       - "11080:11080"
     restart: always
+
+networks:
+  edulution-ui_default:
