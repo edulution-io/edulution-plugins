@@ -10,6 +10,7 @@ services:
       MYSQL_PASSWORD: ${EDULUTION_GUACAMOLE_MYSQL_PASSWORD}
     volumes:
       - guacdb-data:/var/lib/mysql
+      - /srv/docker/edulution-ui/data/apps/desktopdeployment/edulution-guacamole/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
 
   edulution-guacd:
     container_name: edulution-guacd
