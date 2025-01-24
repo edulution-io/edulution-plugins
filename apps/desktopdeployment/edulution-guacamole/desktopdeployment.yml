@@ -14,7 +14,7 @@ http:
     guacamole:
       loadBalancer:
         servers:
-          - url: "http://<IP>:8081/guacamole"
+          - url: "http://localhost:8081/guacamole"
 
   middlewares:
     guacamole-headers:
