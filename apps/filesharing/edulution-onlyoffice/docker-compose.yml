@@ -1,16 +1,17 @@
 services:
   # TODO: Check if this proxy is needed or use traefik
-  haproxy:
-    image: netzint/onlyoffice-haproxy:7.1.1
-    restart: always
-    depends_on:
-      - postgresql
-      - rabbitmq
-      - documentserver
-    ports:
-      - "4443:443"
+  # haproxy:
+  #   image: netzint/onlyoffice-haproxy:7.1.1
+  #   restart: always
+  #   depends_on:
+  #     - postgresql
+  #     - rabbitmq
+  #     - documentserver
+  #   ports:
+  #     - "4443:443"
 
   documentserver:
+    container_name: edulution-onlyoffice-documentserver
     image: netzint/onlyoffice-documentserver:7.1.1
     depends_on:
       - postgresql
@@ -41,19 +42,22 @@ services:
       - ./data/fonts:/usr/share/fonts
 
   rabbitmq:
+    container_name: edulution-onlyoffice-rabbitmq
     image: rabbitmq
     restart: always
     expose:
       - "5672"
 
   # TODO: Maybe use same as edulution-api?
-  # redis:
-  #   image: redis
-  #   restart: always
-  #   expose:
-  #     - "6379"
+  redis:
+    container_name: edulution-onlyoffice-redis
+    image: redis
+    restart: always
+    expose:
+      - "6379"
 
   postgresql:
+    container_name: edulution-onlyoffice-postgresql
     image: postgres:9.5
     # env_file:
     #   - ./config.env
