@@ -1,6 +1,6 @@
 services:
   edulution-mail:
-    image: ghcr.io/edulution-io/edulution-mail
+    image: ghcr.io/edulution-io/edulution-mail:latest
     container_name: edulution-mail
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
