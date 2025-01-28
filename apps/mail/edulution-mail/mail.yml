@@ -15,6 +15,11 @@ http:
         - sogo-headers
         - sogo-buffers
 
+    edulution-active-sync:
+      rule: "PathPrefix(`/Microsoft-Server-ActiveSync`)"
+      service: edulution-sogo
+      tls: {}
+
   middlewares:
     strip-sogo-mail-prefix:
       stripPrefix:
