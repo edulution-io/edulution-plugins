@@ -1,16 +1,16 @@
 services:
   edulution-guacamoledb:
     container_name: edulution-guacamoledb
-    image: mariadb:10.11.10
+    image: ghcr.io/edulution-io/edulution-guacamole-db:latest
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${EDULUTION_GUACAMOLE_MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: "guacamole_db"
       MYSQL_USER: "guacamole_user"
       MYSQL_PASSWORD: ${EDULUTION_GUACAMOLE_MYSQL_PASSWORD}
+      ADMIN_PASSWORD: ${EDULUTION_GUACAMOLE_ADMIN_PASSWORD}
     volumes:
       - guacdb-data:/var/lib/mysql
-      - /srv/docker/edulution-ui/data/apps/desktopdeployment/edulution-guacamole/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
 
   edulution-guacd:
     container_name: edulution-guacd
