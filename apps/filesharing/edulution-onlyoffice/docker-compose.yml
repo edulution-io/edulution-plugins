@@ -8,7 +8,7 @@ services:
     restart: always
     environment:
       - DB_TYPE=postgres
-      - DB_HOST=postgresql
+      - DB_HOST=edulution-onlyoffice-postgresql
       - DB_PORT=5432
       - DB_NAME=onlyoffice
       - DB_USER=onlyoffice
@@ -16,7 +16,7 @@ services:
       # - SSL_CERTIFICATE_PATH=/etc/ssl/webserver/tls.crt
       # - SSL_KEY_PATH=/etc/ssl/webserver/tls.key
       # - SSL_DHPARAM_PATH=/etc/ssl/webserver/dhparam.pem
-      - REDIS_SERVER_HOST=redis
+      - REDIS_SERVER_HOST=edulution-onlyoffice-redis
       - REDIS_SERVER_PORT=6379
       - JWT_ENABLED=true
       - JWT_SECRET=${EDULUTION_ONLYOFFICE_JWT_SECRET}
