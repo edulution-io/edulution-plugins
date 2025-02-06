@@ -1,25 +1,10 @@
 services:
-  # TODO: Check if this proxy is needed or use traefik
-  # haproxy:
-  #   image: netzint/onlyoffice-haproxy:7.1.1
-  #   restart: always
-  #   depends_on:
-  #     - postgresql
-  #     - rabbitmq
-  #     - documentserver
-  #   ports:
-  #     - "4443:443"
-
-  documentserver:
+  edulution-onlyoffice-documentserver:
     container_name: edulution-onlyoffice-documentserver
-    image: netzint/onlyoffice-documentserver:7.1.1
+    image: netzint/onlyoffice-documentserver:7.5
     depends_on:
-      - postgresql
-      - rabbitmq
-    # env_file:
-    #   - ./config.env
-    ports:
-      - "1080:80"
+      - edulution-onlyoffice-postgresql
+      - edulution-onlyoffice-rabbitmq
     restart: always
     environment:
       - DB_TYPE=postgres
@@ -36,31 +21,24 @@ services:
       - JWT_ENABLED=true
       - JWT_SECRET=${EDULUTION_ONLYOFFICE_JWT_SECRET}
     volumes:
-      - ./data/data:/var/www/onlyoffice/Data
-      - ./data/log:/var/log/onlyoffice
-      - ./data/lib:/var/lib/onlyoffice
-      - ./data/fonts:/usr/share/fonts
+      - /srv/docker/edulution-ui/data/apps/filesharing/onlyoffice/data:/var/www/onlyoffice/Data
+      - /srv/docker/edulution-ui/data/apps/filesharing/onlyoffice/log:/var/log/onlyoffice
+      - /srv/docker/edulution-ui/data/apps/filesharing/onlyoffice/lib:/var/lib/onlyoffice
+      - /srv/docker/edulution-ui/data/apps/filesharing/onlyoffice/fonts:/usr/share/fonts
 
-  rabbitmq:
+  edulution-onlyoffice-rabbitmq:
     container_name: edulution-onlyoffice-rabbitmq
-    image: rabbitmq
+    image: rabbitmq:4
     restart: always
-    expose:
-      - "5672"
 
-  # TODO: Maybe use same as edulution-api?
-  redis:
+  edulution-onlyoffice-redis:
     container_name: edulution-onlyoffice-redis
-    image: redis
+    image: redis:7
     restart: always
-    expose:
-      - "6379"
 
-  postgresql:
+  edulution-onlyoffice-postgresql:
     container_name: edulution-onlyoffice-postgresql
-    image: postgres:9.5
-    # env_file:
-    #   - ./config.env
+    image: postgres:16
     restart: always
     environment:
       - POSTGRES_DB=onlyoffice
@@ -68,8 +46,5 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - JWT_ENABLED=true
       - JWT_SECRET=${EDULUTION_ONLYOFFICE_JWT_SECRET}
-    # TODO: Check keycloak uses the same database and port
-    expose:
-      - "5432"
     volumes:
-      - ./data/db:/var/lib/postgresql
+      - /srv/docker/edulution-ui/data/apps/filesharing/onlyoffice/db:/var/lib/postgresql
