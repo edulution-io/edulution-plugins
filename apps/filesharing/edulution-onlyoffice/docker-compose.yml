@@ -12,10 +12,10 @@ services:
       - DB_PORT=5432
       - DB_NAME=onlyoffice
       - DB_USER=onlyoffice
-      - AMQP_URI=amqp://guest:guest@rabbitmq
-      - SSL_CERTIFICATE_PATH=/etc/ssl/webserver/tls.crt
-      - SSL_KEY_PATH=/etc/ssl/webserver/tls.key
-      - SSL_DHPARAM_PATH=/etc/ssl/webserver/dhparam.pem
+      - AMQP_URI=amqp://guest:guest@edulution-onlyoffice-rabbitmq
+      # - SSL_CERTIFICATE_PATH=/etc/ssl/webserver/tls.crt
+      # - SSL_KEY_PATH=/etc/ssl/webserver/tls.key
+      # - SSL_DHPARAM_PATH=/etc/ssl/webserver/dhparam.pem
       - REDIS_SERVER_HOST=redis
       - REDIS_SERVER_PORT=6379
       - JWT_ENABLED=true
