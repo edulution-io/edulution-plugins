@@ -1,7 +1,7 @@
 http:
   routers:
     docservice:
-      rule: PathPrefix(`/documentserver-virtual-path/`)
+      rule: PathPrefix(`/onlyoffice`)
       service: docservice
       entryPoints:
         - websecure
@@ -11,9 +11,9 @@ http:
     docservice:
       loadBalancer:
         servers:
-          - url: https://edulution-onlyoffice-documentserver/
+          - url: https://edulution-onlyoffice-documentserver
   middlewares:
     docservice-strip-prefix:
       stripPrefix:
         prefixes:
-          - /documentserver-virtual-path/
+          - /onlyoffice
