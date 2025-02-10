@@ -1,27 +1,19 @@
 http:
   routers:
     docservice:
-      rule: "PathPrefix(`/documentserver-virtual-path`)"
+      rule: PathPrefix(`/documentserver-virtual-path/`)
       service: docservice
       entryPoints:
-        - http
+        - websecure
       middlewares:
         - docservice-strip-prefix
-        - docservice-headers
-
   services:
     docservice:
       loadBalancer:
         servers:
-          - url: "http://edulution-onlyoffice-documentserver/"
-
+          - url: http://edulution-onlyoffice-documentserver/
   middlewares:
     docservice-strip-prefix:
       stripPrefix:
         prefixes:
-          - /documentserver-virtual-path
-
-    docservice-headers:
-      headers:
-        customRequestHeaders:
-          X-Forwarded-Host: "{host}/documentserver-virtual-path"
+          - /documentserver-virtual-path/

@@ -1,7 +1,7 @@
 services:
   edulution-onlyoffice-documentserver:
     container_name: edulution-onlyoffice-documentserver
-    image: netzint/onlyoffice-documentserver:7.5.0
+    image: onlyoffice/documentserver:latest
     depends_on:
       - edulution-onlyoffice-postgresql
       - edulution-onlyoffice-rabbitmq
@@ -17,8 +17,6 @@ services:
       - JWT_SECRET=${EDULUTION_ONLYOFFICE_JWT_SECRET}
       - JWT_HEADER=Authorization
       - JWT_IN_BODY=true
-    ports:
-      - "8088:80"
     stdin_open: true
     restart: always
     stop_grace_period: 60s
