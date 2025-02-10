@@ -1,17 +1,17 @@
 services:
-  edulution-onlyoffice-documentserver:
-    image: netzint/onlyoffice-documentserver:7.5.0
-    container_name: edulution-onlyoffice-documentserver
+  onlyoffice-documentserver:
+    container_name: onlyoffice-documentserver
+    image: onlyoffice/documentserver:latest
     depends_on:
-      - edulution-onlyoffice-postgresql
-      - edulution-onlyoffice-rabbitmq
+      - onlyoffice-postgresql
+      - onlyoffice-rabbitmq
     environment:
       - DB_TYPE=postgres
-      - DB_HOST=edulution-onlyoffice-postgresql
+      - DB_HOST=onlyoffice-postgresql
       - DB_PORT=5432
       - DB_NAME=onlyoffice
       - DB_USER=onlyoffice
-      - AMQP_URI=amqp://guest:guest@edulution-onlyoffice-rabbitmq
+      - AMQP_URI=amqp://guest:guest@onlyoffice-rabbitmq
       # Uncomment strings below to enable the JSON Web Token validation.
       - JWT_ENABLED=true
       - JWT_SECRET=${EDULUTION_ONLYOFFICE_JWT_SECRET}
@@ -30,15 +30,15 @@ services:
       - /var/www/onlyoffice/documentserver-example/public/files
       - /usr/share/fonts
 
-  edulution-onlyoffice-rabbitmq:
-    container_name: edulution-onlyoffice-rabbitmq
-    image: rabbitmq:4
+  onlyoffice-rabbitmq:
+    container_name: onlyoffice-rabbitmq
+    image: rabbitmq
     restart: always
     expose:
       - "5672"
 
-  edulution-onlyoffice-postgresql:
-    container_name: edulution-onlyoffice-postgresql
+  onlyoffice-postgresql:
+    container_name: onlyoffice-postgresql
     image: postgres:12
     environment:
       - POSTGRES_DB=onlyoffice
