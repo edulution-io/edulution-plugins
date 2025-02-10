@@ -11,7 +11,7 @@ http:
     docservice:
       loadBalancer:
         servers:
-          - url: http://edulution-onlyoffice-documentserver/
+          - url: https://edulution-onlyoffice-documentserver/
   middlewares:
     docservice-strip-prefix:
       stripPrefix:
