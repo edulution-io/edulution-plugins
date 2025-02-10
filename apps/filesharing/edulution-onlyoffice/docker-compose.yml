@@ -1,7 +1,7 @@
 services:
   edulution-onlyoffice-documentserver:
     container_name: edulution-onlyoffice-documentserver
-    image: onlyoffice/documentserver:latest
+    image: netzint/onlyoffice-documentserver:7.5.0
     depends_on:
       - edulution-onlyoffice-postgresql
       - edulution-onlyoffice-rabbitmq
