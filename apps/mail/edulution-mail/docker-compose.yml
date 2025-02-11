@@ -1,10 +1,11 @@
 services:
   edulution-mail:
-    image: ghcr.io/edulution-io/edulution-mail:latest
+    image: nginx:latest
+    # image: ghcr.io/edulution-io/edulution-mail:latest
     container_name: edulution-mail
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /srv/docker/edulution-mail:/srv/docker/edulution-mail
+    # volumes:
+    #   - /var/run/docker.sock:/var/run/docker.sock
+    #   - /srv/docker/edulution-mail:/srv/docker/edulution-mail
     environment:
       MAILCOW_HOSTNAME: <EDULUTION_MAIL_HOSTNAME>
       MAILCOW_PATH: /srv/docker/edulution-mail
