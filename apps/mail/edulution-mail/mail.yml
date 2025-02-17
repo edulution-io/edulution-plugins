@@ -20,6 +20,11 @@ http:
       service: edulution-sogo
       tls: {}
 
+    edulution-autodiscover:
+      rule: "(HostRegexp(`autodiscover.*`) || HostRegexp(`autoconfig.*`)) && (PathPrefix(`/mail/config-v1.1.xml`) || PathPrefix(`/autodiscover/autodiscover.xml`)) "
+      service: edulution-sogo
+      tls: {}
+
   middlewares:
     strip-sogo-mail-prefix:
       stripPrefix:
