@@ -3,6 +3,8 @@ http:
     edulution-sogo-mail:
       rule: "PathPrefix(`/sogo-mail`)"
       service: edulution-sogo
+      entryPoints:
+        - websecure
       tls: {}
       middlewares:
         - strip-sogo-mail-prefix
@@ -10,6 +12,8 @@ http:
     edulution-sogo:
       rule: "PathPrefix(`/SOGo`)"
       service: edulution-sogo
+      entryPoints:
+        - websecure
       tls: {}
       middlewares:
         - sogo-headers
@@ -50,3 +54,19 @@ http:
       loadBalancer:
         servers:
           - url: "http://nginx/"
+
+tcp:
+  routers:
+    imaps:
+      rule: "HostSNI(`*`)"
+      entryPoints:
+        - "imaps"
+      service: "mail-imaps"
+      tls:
+        passthrough: true
+
+  services:
+    mail-imaps:
+      loadBalancer:
+        servers:
+          - address: "dovecot-mailcow:993"
