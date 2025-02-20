@@ -5,12 +5,16 @@ http:
       service: edulution-sogo
       entryPoints:
         - websecure
+      entryPoints:
+        - websecure
       tls: {}
       middlewares:
         - strip-sogo-mail-prefix
     edulution-sogo:
       rule: PathPrefix(`/SOGo`)
       service: edulution-sogo
+      entryPoints:
+        - websecure
       entryPoints:
         - websecure
       tls: {}
@@ -27,6 +31,13 @@ http:
       rule: "(HostRegexp(`autodiscover.*`) || HostRegexp(`autoconfig.*`)) &&
         (PathPrefix(`/mail/config-v1.1.xml`) ||
         PathPrefix(`/autodiscover/autodiscover.xml`)) "
+      service: edulution-sogo
+      entryPoints:
+        - websecure
+      tls: {}
+
+    edulution-autodiscover:
+      rule: "(HostRegexp(`autodiscover.*`) || HostRegexp(`autoconfig.*`)) && (PathPrefix(`/mail/config-v1.1.xml`) || PathPrefix(`/autodiscover/autodiscover.xml`)) "
       service: edulution-sogo
       entryPoints:
         - websecure
