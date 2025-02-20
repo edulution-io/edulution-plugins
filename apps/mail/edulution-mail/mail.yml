@@ -1,47 +1,70 @@
 http:
   routers:
     edulution-sogo-mail:
-      rule: "PathPrefix(`/sogo-mail`)"
+      rule: PathPrefix(`/sogo-mail`)
       service: edulution-sogo
+      entryPoints:
+        - websecure
       tls: {}
       middlewares:
         - strip-sogo-mail-prefix
-
     edulution-sogo:
-      rule: "PathPrefix(`/SOGo`)"
+      rule: PathPrefix(`/SOGo`)
       service: edulution-sogo
+      entryPoints:
+        - websecure
       tls: {}
       middlewares:
         - sogo-headers
         - sogo-buffers
-
     edulution-active-sync:
-      rule: "PathPrefix(`/Microsoft-Server-ActiveSync`)"
+      rule: PathPrefix(`/Microsoft-Server-ActiveSync`)
       service: edulution-sogo
+      entryPoints:
+        - websecure
       tls: {}
-
+    edulution-autodiscover:
+      rule: "(HostRegexp(`autodiscover.*`) || HostRegexp(`autoconfig.*`)) &&
+        (PathPrefix(`/mail/config-v1.1.xml`) ||
+        PathPrefix(`/autodiscover/autodiscover.xml`)) "
+      service: edulution-sogo
+      entryPoints:
+        - websecure
+      tls: {}
   middlewares:
     strip-sogo-mail-prefix:
       stripPrefix:
         prefixes:
-          - "/sogo-mail"
+          - /sogo-mail
     sogo-headers:
       headers:
         customRequestHeaders:
-          X-Forwarded-Proto: "https"
+          X-Forwarded-Proto: https
         frameDeny: false
         customResponseHeaders:
-          X-Frame-Options: "ALLOWALL"
+          X-Frame-Options: ALLOWALL
     sogo-buffers:
       buffering:
         maxRequestBodyBytes: 0
         memRequestBodyBytes: 131072
         maxResponseBodyBytes: 0
         memResponseBodyBytes: 524288
-        retryExpression: "IsNetworkError() && Attempts() <= 2"
-
+        retryExpression: IsNetworkError() && Attempts() <= 2
   services:
     edulution-sogo:
       loadBalancer:
         servers:
-          - url: "http://nginx/"
+          - url: http://nginx/
+tcp:
+  routers:
+    imap:
+      rule: HostSNI(`*`)
+      entryPoints:
+        - imap
+      service: mail-imap
+
+  services:
+    mail-imap:
+      loadBalancer:
+        servers:
+          - address: dovecot-mailcow:143
