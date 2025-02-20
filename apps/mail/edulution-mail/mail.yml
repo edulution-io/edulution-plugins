@@ -22,11 +22,15 @@ http:
     edulution-active-sync:
       rule: "PathPrefix(`/Microsoft-Server-ActiveSync`)"
       service: edulution-sogo
+      entryPoints:
+        - websecure
       tls: {}
 
     edulution-autodiscover:
       rule: "(HostRegexp(`autodiscover.*`) || HostRegexp(`autoconfig.*`)) && (PathPrefix(`/mail/config-v1.1.xml`) || PathPrefix(`/autodiscover/autodiscover.xml`)) "
       service: edulution-sogo
+      entryPoints:
+        - websecure
       tls: {}
 
   middlewares:
