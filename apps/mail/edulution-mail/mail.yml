@@ -5,16 +5,12 @@ http:
       service: edulution-sogo
       entryPoints:
         - websecure
-      entryPoints:
-        - websecure
       tls: {}
       middlewares:
         - strip-sogo-mail-prefix
     edulution-sogo:
       rule: PathPrefix(`/SOGo`)
       service: edulution-sogo
-      entryPoints:
-        - websecure
       entryPoints:
         - websecure
       tls: {}
