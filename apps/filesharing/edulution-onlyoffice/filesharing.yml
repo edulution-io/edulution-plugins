@@ -1,7 +1,7 @@
 http:
   routers:
     docservice:
-      rule: PathPrefix(`/onlyoffice`)
+      rule: PathPrefix(`/docservice/`)
       service: docservice
       entryPoints:
         - websecure
@@ -17,7 +17,7 @@ http:
     docservice-strip-prefix:
       stripPrefix:
         prefixes:
-          - /onlyoffice
+          - /docservice/
     docservice-add-headers:
       headers:
         customRequestHeaders:
