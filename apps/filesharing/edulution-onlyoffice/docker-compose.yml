@@ -27,6 +27,8 @@ services:
       - /srv/docker/edulution-ui/data/apps/filesharing/onlyoffice/log:/var/log/onlyoffice
       - /srv/docker/edulution-ui/data/apps/filesharing/onlyoffice/lib:/var/lib/onlyoffice
       - /srv/docker/edulution-ui/data/apps/filesharing/onlyoffice/fonts:/usr/share/fonts
+    expose:
+      - "80"
 #   edulution-onlyoffice-rabbitmq:
 #     container_name: edulution-onlyoffice-rabbitmq
 #     image: rabbitmq:4
