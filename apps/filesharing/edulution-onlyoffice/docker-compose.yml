@@ -1,18 +1,19 @@
 services:
   edulution-onlyoffice-documentserver:
     container_name: edulution-onlyoffice-documentserver
-    image: netzint/onlyoffice-documentserver:7.5.0
-    depends_on:
-      - edulution-onlyoffice-postgresql
-      - edulution-onlyoffice-rabbitmq
+    # image: netzint/onlyoffice-documentserver:7.5.0
+    image: onlyoffice/documentserver:latest
+    # depends_on:
+    #   - edulution-onlyoffice-postgresql
+    #   - edulution-onlyoffice-rabbitmq
     environment:
-      - DB_TYPE=postgres
-      - DB_HOST=edulution-onlyoffice-postgresql
-      - DB_PORT=5432
-      - DB_NAME=onlyoffice
-      - DB_USER=onlyoffice
-      - DB_PASS=${EDULUTION_ONLYOFFICE_POSTGRES_PASSWORD}
-      - AMQP_URI=amqp://guest:guest@edulution-onlyoffice-rabbitmq
+      # - DB_TYPE=postgres
+      # - DB_HOST=edulution-onlyoffice-postgresql
+      # - DB_PORT=5432
+      # - DB_NAME=onlyoffice
+      # - DB_USER=onlyoffice
+      # - DB_PASS=${EDULUTION_ONLYOFFICE_POSTGRES_PASSWORD}
+      # - AMQP_URI=amqp://guest:guest@edulution-onlyoffice-rabbitmq
       - JWT_ENABLED=true
       - JWT_SECRET=${EDULUTION_ONLYOFFICE_JWT_SECRET}
       - JWT_HEADER=Authorization
@@ -25,27 +26,26 @@ services:
       - /srv/docker/edulution-ui/data/apps/filesharing/onlyoffice/log:/var/log/onlyoffice
       - /srv/docker/edulution-ui/data/apps/filesharing/onlyoffice/lib:/var/lib/onlyoffice
       - /srv/docker/edulution-ui/data/apps/filesharing/onlyoffice/fonts:/usr/share/fonts
+#   edulution-onlyoffice-rabbitmq:
+#     container_name: edulution-onlyoffice-rabbitmq
+#     image: rabbitmq:4
+#     restart: always
+#     expose:
+#       - "5672"
 
-  edulution-onlyoffice-rabbitmq:
-    container_name: edulution-onlyoffice-rabbitmq
-    image: rabbitmq:4
-    restart: always
-    expose:
-      - "5672"
+#   edulution-onlyoffice-postgresql:
+#     container_name: edulution-onlyoffice-postgresql
+#     image: postgres:12
+#     environment:
+#       - POSTGRES_DB=onlyoffice
+#       - POSTGRES_USER=onlyoffice
+#       - POSTGRES_HOST_AUTH_METHOD=trust
+#       - POSTGRES_PASSWORD=${EDULUTION_ONLYOFFICE_POSTGRES_PASSWORD}
+#     restart: always
+#     expose:
+#       - "5432"
+#     volumes:
+#       - edulution-onlyoffice-postgresql_data:/var/lib/postgresql
 
-  edulution-onlyoffice-postgresql:
-    container_name: edulution-onlyoffice-postgresql
-    image: postgres:12
-    environment:
-      - POSTGRES_DB=onlyoffice
-      - POSTGRES_USER=onlyoffice
-      - POSTGRES_HOST_AUTH_METHOD=trust
-      - POSTGRES_PASSWORD=${EDULUTION_ONLYOFFICE_POSTGRES_PASSWORD}
-    restart: always
-    expose:
-      - "5432"
-    volumes:
-      - edulution-onlyoffice-postgresql_data:/var/lib/postgresql
-
-volumes:
-  edulution-onlyoffice-postgresql_data:
+# volumes:
+#   edulution-onlyoffice-postgresql_data:
