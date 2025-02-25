@@ -16,11 +16,12 @@ services:
       # - AMQP_URI=amqp://guest:guest@edulution-onlyoffice-rabbitmq
       - JWT_ENABLED=true
       - JWT_SECRET=${EDULUTION_ONLYOFFICE_JWT_SECRET}
-      - JWT_HEADER=Authorization
-      - JWT_IN_BODY=true
-    stdin_open: true
+      - ENABLE_SSL=false
+      # - JWT_HEADER=Authorization
+      # - JWT_IN_BODY=true
+    # stdin_open: true
     restart: always
-    stop_grace_period: 60s
+    # stop_grace_period: 60s
     volumes:
       - /srv/docker/edulution-ui/data/apps/filesharing/onlyoffice/data:/var/www/onlyoffice/Data
       - /srv/docker/edulution-ui/data/apps/filesharing/onlyoffice/log:/var/log/onlyoffice
