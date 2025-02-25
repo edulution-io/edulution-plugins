@@ -7,13 +7,18 @@ http:
         - websecure
       middlewares:
         - docservice-strip-prefix
+        - docservice-add-headers
   services:
     docservice:
       loadBalancer:
         servers:
-          - url: https://edulution-onlyoffice-documentserver
+          - url: http://edulution-onlyoffice-documentserver
   middlewares:
     docservice-strip-prefix:
       stripPrefix:
         prefixes:
           - /onlyoffice
+    docservice-add-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
