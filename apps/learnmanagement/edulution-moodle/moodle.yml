@@ -1,0 +1,22 @@
+http:
+  routers:
+    moodle-app:
+      rule: "PathPrefix(`/moodle-app`)"
+      service: moodle-app
+      entryPoints:
+        - websecure
+      tls: {}
+      middlewares:
+        - strip-moodle-app-prefix
+
+  middlewares:
+    strip-moodle-app-prefix:
+      stripPrefix:
+        prefixes:
+          - "/moodle-app"
+
+  services:
+    moodle-app:
+      loadBalancer:
+        servers:
+          - url: "http://edulution-moodle-app:8080"
