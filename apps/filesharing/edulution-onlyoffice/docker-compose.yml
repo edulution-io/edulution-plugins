@@ -17,7 +17,7 @@ services:
       - JWT_ENABLED=true
       - JWT_SECRET=${EDULUTION_ONLYOFFICE_JWT_SECRET}
       - ENABLE_SSL=false
-      - DS_BASE_PATH=/docservice/
+      # - DS_BASE_PATH=/docservice/
       # - JWT_HEADER=Authorization
       # - JWT_IN_BODY=true
     # stdin_open: true
