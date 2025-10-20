@@ -14,12 +14,12 @@ services:
 
   edulution-guacd:
     container_name: edulution-guacd
-    image: guacamole/guacd:1.5.5
+    image: guacamole/guacd:1.6.0
     restart: unless-stopped
 
   edulution-guacamole:
     container_name: edulution-guacamole
-    image: guacamole/guacamole:1.5.5
+    image: guacamole/guacamole:1.6.0
     restart: unless-stopped
     environment:
       GUACD_HOSTNAME: "edulution-guacd"
