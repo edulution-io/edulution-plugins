@@ -8,8 +8,9 @@ services:
       - /srv/docker/edulution-mail:/srv/docker/edulution-mail
     environment:
       MAILCOW_HOSTNAME: <EDULUTION_MAIL_HOSTNAME>
-      DOMAIN_QUOTA: 103809024 
+      DOMAIN_QUOTA: 103809024
       MAILCOW_PATH: /srv/docker/edulution-mail
       KEYCLOAK_SECRET_KEY: ${KEYCLOAK_EDU_MAILCOW_SYNC_SECRET}
       MAILCOW_BRANCH: legacy
       MAILCOW_API_TOKEN: ${MAILCOW_API_TOKEN}
+      FORCE_MARKER_UPDATE: 1
