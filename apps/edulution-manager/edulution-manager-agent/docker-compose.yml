@@ -1,0 +1,9 @@
+services:
+  edulution-manager-agent:
+    image: ghcr.io/edulution-io/edulution-manager-agent:latest
+    restart: always
+    container_name: edulution-manager-agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      EDU_MANAGER_INSTALL_TOKEN: <EDU_MANAGER_INSTALL_TOKEN>
