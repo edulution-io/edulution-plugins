@@ -9,4 +9,9 @@ services:
     environment:
       - NODE_ENV=production
       - EDU_MANAGER_INSTALL_TOKEN=<EDU_MANAGER_INSTALL_TOKEN>
-    network_mode: bridge
+    networks:
+      - edulution-ui_default
+
+networks:
+  edulution-ui_default:
+    external: true
