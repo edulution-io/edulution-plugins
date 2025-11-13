@@ -7,7 +7,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /srv/docker/edulution-ui:/srv/docker/edulution-ui
     environment:
-      - EDU_MANAGER_INSTALL_TOKEN=<EDU_MANAGER_INSTALL_TOKEN>
+      EDU_MANAGER_INSTALL_TOKEN: <EDU_MANAGER_INSTALL_TOKEN>
     networks:
       - edulution-ui_default
 
