@@ -5,7 +5,7 @@ services:
     container_name: edulution-manager-agent
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /srv/docker/edulution-ui:/srv/docker/edulution-ui
+      - /srv/docker:/srv/docker
     environment:
       EDU_MANAGER_INSTALL_TOKEN: <EDU_MANAGER_INSTALL_TOKEN>
     networks:
