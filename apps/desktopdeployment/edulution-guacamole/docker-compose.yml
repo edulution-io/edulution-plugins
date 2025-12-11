@@ -16,6 +16,8 @@ services:
     container_name: edulution-guacd
     image: guacamole/guacd:1.6.0
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   edulution-guacamole:
     container_name: edulution-guacamole
@@ -28,6 +30,7 @@ services:
       MYSQL_USER: "guacamole_user"
       MYSQL_PASSWORD: ${EDULUTION_GUACAMOLE_MYSQL_PASSWORD}
       TOTP_ENABLED: "false"
+      QUICKCONNECT_ENABLED: "true"
     depends_on:
       - edulution-guacamoledb
       - edulution-guacd
