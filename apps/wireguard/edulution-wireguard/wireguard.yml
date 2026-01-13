@@ -1,0 +1,12 @@
+udp:
+  routers:
+    wg-router:
+      entryPoints:
+        - wireguard
+      service: wg-service
+
+  services:
+    wg-service:
+      loadBalancer:
+        servers:
+          - address: "edulution-wireguard:443"

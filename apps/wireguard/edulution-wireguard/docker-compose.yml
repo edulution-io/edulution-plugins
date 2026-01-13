@@ -1,0 +1,23 @@
+services:
+  edulution-wireguard:
+    image: ghcr.io/edulution-io/edulution-wireguard:latest
+    container_name: edulution-wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    restart: always
+    volumes:
+      - ./data:/etc/wireguard
+      - /lib/modules:/lib/modules
+    environment:
+      - IPNETWORK=${IPNETWORK}
+      - ADDRESS=${ADDRESS}
+      - EDU_WG_API_KEY=${EDU_WG_API_KEY}
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    networks:
+      - edulution-ui_default
+
+networks:
+  edulution-ui_default:
+    external: true
