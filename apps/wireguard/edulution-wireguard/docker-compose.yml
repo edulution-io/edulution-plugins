@@ -13,6 +13,8 @@ services:
       - IPNETWORK=${IPNETWORK}
       - ADDRESS=${ADDRESS}
       - EDU_WG_API_KEY=${EDU_WG_API_KEY}
+      # - DNS=${DNS:-1.1.1.1} #For site-to-site VPNs
+      # - LOG_LEVEL=${LOG_LEVEL:-INFO} #DEBUG, INFO, WARNING, ERROR
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
     networks:
