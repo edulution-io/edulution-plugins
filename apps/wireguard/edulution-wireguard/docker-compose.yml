@@ -10,10 +10,10 @@ services:
       - /srv/docker/edulution-ui/data:/etc/wireguard
       - /lib/modules:/lib/modules
     environment:
-      - IPNETWORK=${IPNETWORK}
-      - ADDRESS=${ADDRESS}
+      - IPNETWORK=<EDU_WG_NETWORK>
+      - ADDRESS=<EDU_WG_ADDRESS>
       - EDU_WG_API_KEY=${EDU_WG_API_KEY}
-      # - DNS=${DNS:-1.1.1.1} #For site-to-site VPNs
+      - DNS=<EDU_WG_DNS>
       # - LOG_LEVEL=${LOG_LEVEL:-INFO} #DEBUG, INFO, WARNING, ERROR
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
