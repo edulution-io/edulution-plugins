@@ -7,7 +7,7 @@ services:
       - SYS_MODULE
     restart: always
     volumes:
-      - /srv/docker/edulution-ui/data:/etc/wireguard
+      - /srv/docker/edulution-ui/data/apps/wireguard:/etc/wireguard
       - /lib/modules:/lib/modules
     environment:
       EDU_WG_IPNETWORK: <EDU_WG_IPNETWORK>
