@@ -12,7 +12,7 @@ services:
     environment:
       EDU_WG_IPNETWORK: <EDU_WG_IPNETWORK>
       EDU_WG_ADDRESS: <EDU_WG_ADDRESS>
-      EDU_WG_API_KEY: [EDU_WG_API_KEY]
+      EDU_WG_API_KEY: ${EDU_WG_API_KEY}
       EDU_WG_DNS: <EDU_WG_DNS>
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
