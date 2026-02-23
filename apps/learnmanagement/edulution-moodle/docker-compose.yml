@@ -1,63 +1,70 @@
+#
+# Edulution Moodle - Docker Compose Konfiguration
+#
+# Legende:
+#   <XXX>  = Eingabefeld - muss von dir ausgefüllt werden
+#   ${XXX} = Variable - wird aus .env Datei oder System gelesen
+#
+
 services:
-  edulution-moodle-db:
-    image: mariadb:latest
-    container_name: edulution-moodle-db
+  db:
+    image: mariadb:10.11
     restart: unless-stopped
     command:
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_unicode_ci
-      --innodb_file_format=Barracuda
-      --innodb_large_prefix=ON
-      --innodb_file_per_table=ON
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
     environment:
-      - MARIADB_USER=moodle
-      - MARIADB_PASSWORD=moodle
-      - MARIADB_DATABASE=moodle
-      - MARIADB_ROOT_PASSWORD=moodle
+      MARIADB_USER: moodle
+      MARIADB_PASSWORD: ${MOODLE_DB_PASSWORD}
+      MARIADB_DATABASE: moodle
+      MARIADB_ROOT_PASSWORD: ${MOODLE_DB_ROOT_PASSWORD}
     volumes:
-      - /srv/docker/edulution-moodle/data/db:/bitnami/mariadb
+      - /srv/docker/edulution-moodle/db-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      start_period: 10s
+      test: ["CMD", "healthcheck.sh", "--connect"]
       interval: 10s
       timeout: 5s
       retries: 3
-    networks:
-      - edulution-moodle
 
-  edulution-moodle-app:
+  moodle:
     container_name: edulution-moodle-app
+    image: ghcr.io/edulution-io/edulution-moodle:${MOODLE_VERSION:-latest}
     restart: unless-stopped
+    ports:
+      - "${MOODLE_PORT:-8080}:80"
     environment:
-      - MOODLE_DATABASE_HOST=edulution-moodle-db
-      - MOODLE_DATABASE_USER=moodle
-      - MOODLE_DATABASE_PASSWORD=moodle
-      - MOODLE_DATABASE_NAME=moodle
-      - MOODLE_USERNAME=admin
-      - MOODLE_PASSWORD=Muster!
-      - MOODLE_HOST=/moodle-app
-      - MOODLE_REVERSEPROXY=true
-      - MOODLE_SSLPROXY=true
+      # DATENBANK
+      MOODLE_DATABASE_HOST: db
+      MOODLE_DATABASE_NAME: moodle
+      MOODLE_DATABASE_USER: moodle
+      MOODLE_DATABASE_PASSWORD: ${MOODLE_DB_PASSWORD}
+      # MOODLE GRUNDEINSTELLUNGEN
+      MOODLE_WWWROOT: <MOODLE_WWWROOT>
+      MOODLE_ADMIN_USER: admin
+      MOODLE_ADMIN_PASSWORD: ${MOODLE_ADMIN_PASSWORD}
+      MOODLE_ADMIN_EMAIL: <MOODLE_ADMIN_EMAIL>
+      MOODLE_SITE_NAME: <MOODLE_SITE_NAME>
+      # REVERSE PROXY / TRAEFIK
+      MOODLE_REVERSEPROXY: true
+      MOODLE_SSLPROXY: true
+      MOODLE_ALLOWFRAMEMBEDDING: true
+      # EDULUTION PLUGIN - KEYCLOAK
+      EDULUTION_KEYCLOAK_URL: ${KEYCLOAK_URL}
+      EDULUTION_KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      EDULUTION_KEYCLOAK_CLIENT_ID: ${KEYCLOAK_MOODLE_CLIENT_ID}
+      EDULUTION_KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_MOODLE_CLIENT_SECRET}
+      EDULUTION_KEYCLOAK_SYNC_ENABLED: true
+      EDULUTION_VERIFY_SSL: true
     volumes:
-      - /srv/docker/edulution-moodle/data/moodle:/bitnami/moodle
-      - /srv/docker/edulution-moodle/data/moodledata:/bitnami/moodledata
-      - /srv/docker/edulution-moodle/data/logs:/var/log/moodle
+      - /srv/docker/edulution-moodle/moodle-data:/var/www/html/moodle
+      - /srv/docker/edulution-moodle/moodledata:/var/moodledata
     depends_on:
-      edulution-moodle-db:
+      db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -fs http://localhost:8080/login/index.php && curl -fs http://localhost:8080/admin/index.php || exit 1"]
-      interval: 120s
-      timeout: 30s
+      test: ["CMD-SHELL", "curl -fs http://localhost/moodle-app/login/index.php || exit 1"]
+      interval: 60s
+      timeout: 10s
+      start_period: 180s
       retries: 3
-    image: bitnami/moodle:latest
-    entrypoint: ["bash", "-c", "apt-get update && apt-get install -y curl && curl -fsSL https://raw.githubusercontent.com/edulution-io/edulution-moodle/refs/heads/main/entrypoint-wrapper.sh -o /tmp/entrypoint.sh && chmod +x /tmp/entrypoint.sh && exec /tmp/entrypoint.sh"]
-    networks:
-      - edulution-moodle
-      - edulution-ui_default
 
-networks:
-  edulution-moodle:
-    driver: bridge
-  edulution-ui_default:
-    external: true

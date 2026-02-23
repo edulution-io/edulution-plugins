@@ -7,16 +7,19 @@ http:
         - websecure
       tls: {}
       middlewares:
-        - strip-moodle-app-prefix
+        - moodle-headers
 
   middlewares:
-    strip-moodle-app-prefix:
-      stripPrefix:
-        prefixes:
-          - "/moodle-app"
+    moodle-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+        frameDeny: false
+        customResponseHeaders:
+          X-Frame-Options: ALLOWALL
 
   services:
     moodle-app:
       loadBalancer:
         servers:
-          - url: "http://edulution-moodle-app:8080"
+          - url: "http://edulution-moodle-app:80"
