@@ -1,13 +1,6 @@
-#
-# Edulution Moodle - Docker Compose Konfiguration
-#
-# Legende:
-#   <XXX>  = Eingabefeld - muss von dir ausgefüllt werden
-#   ${XXX} = Variable - wird aus .env Datei oder System gelesen
-#
-
 services:
-  db:
+  edulution-moodle-db:
+    container_name: edulution-moodle-db
     image: mariadb:10.11
     restart: unless-stopped
     command:
@@ -26,15 +19,17 @@ services:
       timeout: 5s
       retries: 3
 
-  moodle:
+  edulution-moodle-app:
     container_name: edulution-moodle-app
-    image: ghcr.io/edulution-io/edulution-moodle:${MOODLE_VERSION:-latest}
+    image: ghcr.io/edulution-io/edulution-moodle:latest
     restart: unless-stopped
+    depends_on:
+      - edulution-moodle-db
     ports:
-      - "${MOODLE_PORT:-8080}:80"
+      - "8080:80"
     environment:
       # DATENBANK
-      MOODLE_DATABASE_HOST: db
+      MOODLE_DATABASE_HOST: edulution-moodle-db
       MOODLE_DATABASE_NAME: moodle
       MOODLE_DATABASE_USER: moodle
       MOODLE_DATABASE_PASSWORD: ${MOODLE_DB_PASSWORD}
@@ -45,26 +40,26 @@ services:
       MOODLE_ADMIN_EMAIL: <MOODLE_ADMIN_EMAIL>
       MOODLE_SITE_NAME: <MOODLE_SITE_NAME>
       # REVERSE PROXY / TRAEFIK
-      MOODLE_REVERSEPROXY: true
-      MOODLE_SSLPROXY: true
-      MOODLE_ALLOWFRAMEMBEDDING: true
+      MOODLE_REVERSEPROXY: "true"
+      MOODLE_SSLPROXY: "true"
+      MOODLE_ALLOWFRAMEMBEDDING: "true"
       # EDULUTION PLUGIN - KEYCLOAK
-      EDULUTION_KEYCLOAK_URL: ${KEYCLOAK_URL}
-      EDULUTION_KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      EDULUTION_KEYCLOAK_URL: ${KEYCLOAK_API}
+      EDULUTION_KEYCLOAK_REALM: ${KEYCLOAK_EDU_UI_REALM}
       EDULUTION_KEYCLOAK_CLIENT_ID: ${KEYCLOAK_MOODLE_CLIENT_ID}
       EDULUTION_KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_MOODLE_CLIENT_SECRET}
-      EDULUTION_KEYCLOAK_SYNC_ENABLED: true
-      EDULUTION_VERIFY_SSL: true
+      EDULUTION_KEYCLOAK_SYNC_ENABLED: "true"
+      EDULUTION_VERIFY_SSL: "true"
     volumes:
       - /srv/docker/edulution-moodle/moodle-data:/var/www/html/moodle
       - /srv/docker/edulution-moodle/moodledata:/var/moodledata
-    depends_on:
-      db:
-        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -fs http://localhost/moodle-app/login/index.php || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fs http://localhost/moodle-app/login/index.php || exit 1",
+        ]
       interval: 60s
       timeout: 10s
       start_period: 180s
       retries: 3
-
