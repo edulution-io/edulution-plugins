@@ -51,7 +51,7 @@ services:
       EDULUTION_KEYCLOAK_SYNC_ENABLED: "true"
       EDULUTION_VERIFY_SSL: "true"
     volumes:
-      - /srv/docker/edulution-moodle/moodle-data:/var/www/html/moodle
+      - /srv/docker/edulution-moodle/moodledata:/var/moodledata
     healthcheck:
       test:
         [
