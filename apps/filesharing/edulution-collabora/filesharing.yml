@@ -1,0 +1,22 @@
+http:
+  routers:
+    collabora:
+      rule: PathPrefix(`/collabora`)
+      service: collabora
+      entryPoints:
+        - websecure
+      tls: {}
+      middlewares:
+        - collabora-headers
+
+  middlewares:
+    collabora-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+
+  services:
+    collabora:
+      loadBalancer:
+        servers:
+          - url: http://edulution-collabora:9980
