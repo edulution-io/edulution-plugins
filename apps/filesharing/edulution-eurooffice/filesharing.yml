@@ -1,0 +1,24 @@
+http:
+  routers:
+    eurooffice:
+      rule: PathPrefix(`/eurooffice/`)
+      service: eurooffice
+      entryPoints:
+        - websecure
+      middlewares:
+        - eurooffice-strip-prefix
+        - eurooffice-add-headers
+  services:
+    eurooffice:
+      loadBalancer:
+        servers:
+          - url: http://edulution-eurooffice-documentserver
+  middlewares:
+    eurooffice-strip-prefix:
+      stripPrefix:
+        prefixes:
+          - /eurooffice/
+    eurooffice-add-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"

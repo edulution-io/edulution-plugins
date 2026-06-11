@@ -1,0 +1,17 @@
+services:
+  edulution-eurooffice-documentserver:
+    container_name: edulution-eurooffice-documentserver
+    image: ghcr.io/euro-office/documentserver:latest
+    environment:
+      - JWT_ENABLED=true
+      - JWT_SECRET=${EDULUTION_EUROOFFICE_JWT_SECRET}
+      - ENABLE_SSL=false
+      - DS_BASE_PATH=/eurooffice/
+    restart: always
+    volumes:
+      - /srv/docker/edulution-ui/data/apps/filesharing/eurooffice/data:/var/www/onlyoffice/Data
+      - /srv/docker/edulution-ui/data/apps/filesharing/eurooffice/log:/var/log/onlyoffice
+      - /srv/docker/edulution-ui/data/apps/filesharing/eurooffice/lib:/var/lib/onlyoffice
+      - /srv/docker/edulution-ui/data/apps/filesharing/eurooffice/fonts:/usr/share/fonts
+    expose:
+      - "80"
