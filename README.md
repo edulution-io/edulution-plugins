@@ -21,10 +21,11 @@ apps/
 └── <app>/                       # e.g. filesharing
     └── edulution-<container>/    # e.g. edulution-eurooffice
         ├── docker-compose.yml    # required – the service definition
-        └── filesharing.yml       # optional – Traefik dynamic configuration
+        ├── filesharing.yml       # optional – Traefik dynamic configuration
+        └── <assets>/             # optional – static files the platform fetches at runtime
 ```
 
-edulution-ui loads `docker-compose.yml` directly from this repository (raw GitHub) when an application is installed.
+edulution-ui loads `docker-compose.yml` directly from this repository (raw GitHub) when an application is installed. A container directory may also host other static assets that the edulution platform fetches at runtime — for example the SOGo webmail themes under `apps/mail/edulution-mail/sogo/`, which the platform reads to check for and apply theme updates.
 
 ## Available applications
 
