@@ -12,6 +12,17 @@ This repository contains a collection of **Docker Compose files** and **Traefik 
 
 **Dynamic configurations:** YAML files that define dynamic routes, services and middlewares used for redirection within edulution.
 
+Every Traefik configuration starts with a version header:
+
+```yaml
+# version: v1.0
+# updated: 2026-08-06T00:00:00Z
+```
+
+edulution installations reconcile their local copy of the file against this header on startup and adopt the published config whenever the version differs from the one they last adopted. **Raise `version` whenever a change should reach existing installations** — a config edited without raising it is only picked up by new installs. The `updated` timestamp is informational and is not compared.
+
+Between two version bumps an administrator may adapt the config locally, and those changes survive; the next bump replaces them. A file without a version header is never rolled out to existing installations.
+
 ## Repository structure
 
 Plugins are grouped by edulution app under `apps/<app>/<container>/`. Each container directory holds the files that edulution-ui fetches at install time:
