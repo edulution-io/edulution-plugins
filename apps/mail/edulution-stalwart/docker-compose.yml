@@ -52,7 +52,11 @@ services:
       - /srv/docker/edulution-stalwart/data:/var/lib/stalwart
 
   edulution-stalwart-sync:
-    image: ghcr.io/edulution-io/edulution-mail/stalwart-sync:latest
+    # Der Tag ist einstellbar, weil die CI ihn nach Zweig vergibt: main wird `latest`, dev
+    # wird `dev`, jeder andere Zweig traegt seinen eigenen Namen (feat/stalwart ->
+    # `feat-stalwart`). Auf einem Testsystem, das noch vor dem Merge laeuft, gaebe `latest`
+    # ein Image, das es nicht gibt - und der Fehler stuende erst im Docker-Log.
+    image: ghcr.io/edulution-io/edulution-mail/stalwart-sync:${STALWART_SYNC_IMAGE_TAG:-latest}
     container_name: edulution-stalwart-sync
     restart: unless-stopped
     command: ["python", "sync/sync.py"]
