@@ -23,18 +23,19 @@ services:
       # tatsächlich anlegt. Auf 143 gibt es KEINEN — ein Mapping dorthin nimmt Verbindungen
       # an und lässt sie fallen, was beim Client wie ein TLS-Fehler aussieht.
       #
-      # Die Host-Ports stehen als Variable mit Vorgabewert. Solange daneben noch ein
-      # mailcow läuft, sind die Standardports belegt; dann werden sie in der abgelegten
-      # docker-compose.yml unter /srv/docker/edulution-stalwart auf Nebenports gezogen
-      # (10025, 10465, 10587, 10993, 10995, 14190) und der Container neu erzeugt.
-      - "${STALWART_PORT_SMTP:-25}:25"            # SMTP zwischen Servern, keine Anmeldung
-      - "${STALWART_PORT_SUBMISSIONS:-465}:465"   # Submission, implizites TLS
-      - "${STALWART_PORT_SUBMISSION:-587}:587"    # Submission mit STARTTLS, von der Provisionierung nachgerüstet
-      - "${STALWART_PORT_IMAPS:-993}:993"         # IMAPS
+      # Feste Host-Ports. Solange daneben noch ein mailcow läuft, sind sie belegt; dann
+      # werden sie in der abgelegten docker-compose.yml unter /srv/docker/edulution-stalwart
+      # auf Nebenports gezogen (10025, 10465, 10587, 10993, 10995, 14190) und der Container
+      # neu erzeugt. Eine Variable mit Vorgabewert (${PORT:-25}) geht hier NICHT: Der
+      # Installer trennt Host- und Container-Port am Doppelpunkt, bevor er Variablen auflöst.
+      - "25:25"      # SMTP zwischen Servern, keine Anmeldung
+      - "465:465"    # Submission, implizites TLS
+      - "587:587"    # Submission mit STARTTLS, von der Provisionierung nachgerüstet
+      - "993:993"    # IMAPS
       # POP3 bewirbt Stalwart in Autoconfig und Autodiscover. Ohne dieses Mapping bekommt
       # ein Mailprogramm einen Server genannt, den es nicht erreicht.
-      - "${STALWART_PORT_POP3S:-995}:995"         # POP3S
-      - "${STALWART_PORT_MANAGESIEVE:-4190}:4190" # ManageSieve
+      - "995:995"    # POP3S
+      - "4190:4190"  # ManageSieve
     environment:
       TZ: ${TZ:-Europe/Berlin}
       # Die Adresse, der JMAP- und DAV-Clients folgen. Sie muss VOM CLIENT AUS erreichbar
@@ -45,6 +46,14 @@ services:
       # Nur so kann die Provisionierung sich überhaupt anmelden. edulution-api erzeugt das
       # Passwort beim Anlegen und liest es beim Provisionieren aus dieser Datei zurück.
       STALWART_RECOVERY_ADMIN: admin:${STALWART_ADMIN_PASSWORD}
+      # Die drei folgenden liest die Provisionierung aus dieser Datei zurück. Sie stehen am
+      # Mailserver und nicht nur beim Abgleich: Ein Aufbau ohne den Abgleich-Container wäre
+      # sonst nicht einzurichten. Bewusst OHNE STALWART_-Präfix - unter diesem Präfix liest
+      # der Server Konfiguration, und ein erfundener Schlüssel wäre eine Wette darauf, dass
+      # er ihn übergeht.
+      MAIL_DOMAIN: <EDULUTION_MAIL_DOMAIN>
+      MAIL_API_USER: edulution-api@<EDULUTION_MAIL_DOMAIN>
+      MAIL_API_KEY: ${STALWART_API_PASSWORD}
     volumes:
       # Zwei getrennte Pfade, wie vom Image erwartet. /opt/stalwart wird NICHT verwendet —
       # dieser Pfad stammt aus veralteten Anleitungen.
