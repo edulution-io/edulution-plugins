@@ -71,21 +71,34 @@ services:
     command: ["python", "sync/sync.py"]
     environment:
       TZ: ${TZ:-Europe/Berlin}
-      # Containerintern, nicht die öffentliche Adresse: Der Abgleich läuft im selben Netz.
-      STALWART_URL: http://edulution-stalwart:8080
+      # STALWART_API_URL, nicht STALWART_URL: Unter dem falschen Namen fällt der Abgleich
+      # auf seine Vorgabe http://stalwart:8080 zurück, findet niemanden und meldet
+      # "Stalwart ist nicht erreichbar oder die Zugangsdaten stimmen nicht" - eine Meldung,
+      # die beides zugleich behauptet und in die Irre führt.
+      STALWART_API_URL: http://edulution-stalwart:8080
       STALWART_API_USER: edulution-api@<EDULUTION_MAIL_DOMAIN>
       # Derselbe Wert, den die Provisionierung dem Dienstkonto setzt. Würde er hier fehlen,
       # erzeugte die Provisionierung ein eigenes — und der Abgleich meldete sich nicht mehr
       # an, und zwar erst Minuten später, wenn niemand mehr an die Einrichtung denkt.
       STALWART_API_KEY: ${STALWART_API_PASSWORD}
       MAIL_DOMAIN: <EDULUTION_MAIL_DOMAIN>
-      KEYCLOAK_SERVER_URL: ${KEYCLOAK_API}
-      KEYCLOAK_REALM: ${KEYCLOAK_EDU_UI_REALM:-edulution}
+      # Grundlage des Deaktivierungszählers. Ohne die Angabe schreibt der Abgleich nach
+      # /srv/docker/edulution-mail - dem Pfad der mailcow-Installation.
+      STALWART_PATH: /var/lib/edulution-sync
+      # Nicht ${KEYCLOAK_API}: Das ist die Adresse, unter der edulution-api Keycloak sieht,
+      # und die stimmt nur solange, wie beide gleich stehen. Der Abgleich fragt aus dem
+      # Docker-Netz heraus - deshalb dieselbe Vorgabe wie im Betriebs-Stack.
+      KEYCLOAK_SERVER_URL: ${KEYCLOAK_SERVER_URL:-https://edulution-traefik/auth/}
       KEYCLOAK_CLIENT_ID: edu-stalwart-sync
       KEYCLOAK_SECRET_KEY: ${KEYCLOAK_EDU_STALWART_SYNC_SECRET}
       GROUPS_TO_SYNC: role-schooladministrator,role-teacher,role-student
       # Löschen bleibt aus, bis jemand es bewusst einschaltet. Ein Abgleich, der beim ersten
       # Lauf gegen eine halb gefüllte Keycloak-Instanz läuft, nähme sonst Postfächer mit.
       DELETE_ENABLED: "0"
+    volumes:
+      # Der Deaktivierungszähler muss einen Neustart überleben: Er entscheidet, ab wann ein
+      # Konto, das seit Tagen in keinem Verzeichnis mehr steht, stillgelegt wird. Läge er im
+      # Container, begänne die Frist bei jedem Neustart von vorn.
+      - /srv/docker/edulution-stalwart/sync:/var/lib/edulution-sync
     depends_on:
       - edulution-stalwart
