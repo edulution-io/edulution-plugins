@@ -1,0 +1,82 @@
+# Traefik-Routen für edulution mail auf Stalwart.
+#
+# Nur die Pfade, die ein fremdes Programm braucht — Mailclients, das CalDAV-Add-in in
+# Outlook, Handys. Die edulution-Oberfläche geht nie hierüber: edulution-api spricht den
+# Container direkt im Docker-Netz an.
+#
+# Bewusst NICHT geroutet: "/". Dort liegt Stalwarts eigene Verwaltungsoberfläche, und die
+# gehört nicht ins Internet — der API-Schlüssel darin hat volle Rechte.
+
+http:
+  routers:
+    # CalDAV und CardDAV. Hierüber bindet sich Outlook (über das CalDav-Synchronizer-
+    # Add-in, denn Outlook selbst spricht kein CalDAV), Thunderbird, iOS und Android an.
+    edulution-stalwart-dav:
+      rule: PathPrefix(`/dav`)
+      service: edulution-stalwart
+      entryPoints:
+        - websecure
+      tls: {}
+      middlewares:
+        - stalwart-headers
+        - stalwart-buffers
+
+    # JMAP. Der Weg, den moderne Clients und die Verwaltungsaufrufe nehmen.
+    edulution-stalwart-jmap:
+      rule: PathPrefix(`/jmap`) || PathPrefix(`/.well-known/jmap`)
+      service: edulution-stalwart
+      entryPoints:
+        - websecure
+      tls: {}
+      middlewares:
+        - stalwart-headers
+
+    # Ohne diese beiden findet kein Client den Server von selbst: Er fragt
+    # /.well-known/caldav auf der Maildomain und folgt der Weiterleitung.
+    edulution-stalwart-wellknown:
+      rule: PathPrefix(`/.well-known/caldav`) || PathPrefix(`/.well-known/carddav`)
+      service: edulution-stalwart
+      entryPoints:
+        - websecure
+      tls: {}
+
+    # Automatische Kontoeinrichtung. Outlook fragt autodiscover.<domain>, Thunderbird
+    # autoconfig.<domain> — beide Namen müssen im DNS auf diesen Server zeigen.
+    edulution-stalwart-autodiscover:
+      rule: "(HostRegexp(`autodiscover.*`) || HostRegexp(`autoconfig.*`)) &&
+        (PathPrefix(`/mail/config-v1.1.xml`) ||
+        PathPrefix(`/autodiscover/autodiscover.xml`))"
+      service: edulution-stalwart
+      entryPoints:
+        - websecure
+      tls: {}
+
+  middlewares:
+    stalwart-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+    # Ein Kalender mit Jahren an Terminen oder ein Adressbuch mit tausend Kontakten geht in
+    # einer einzigen Antwort über die Leitung. Mit Traefiks Vorgabe bricht ein REPORT auf
+    # so eine Sammlung mittendrin ab, und der Client meldet einen Verbindungsfehler.
+    stalwart-buffers:
+      buffering:
+        maxRequestBodyBytes: 0
+        memRequestBodyBytes: 131072
+        maxResponseBodyBytes: 0
+        memResponseBodyBytes: 524288
+        retryExpression: IsNetworkError() && Attempts() <= 2
+
+  services:
+    edulution-stalwart:
+      loadBalancer:
+        servers:
+          # Klartext-Port im Docker-Netz: Die TLS-Strecke endet bei Traefik. Auf 443 des
+          # Containers zu zeigen hieße TLS in TLS, und Stalwarts eigenes Zertifikat ist zu
+          # diesem Zeitpunkt selbstsigniert.
+          - url: http://edulution-stalwart:8080/
+
+# Kein TCP-Router für IMAP, anders als bei mailcow: Stalwart hat KEINEN Listener auf 143.
+# Ein Router dorthin nähme Verbindungen an und ließe sie fallen — beim Client sieht das
+# nach einem TLS-Fehler aus und führt lange in die Irre. IMAPS erreichen die Clients über
+# den Host-Port 993 aus der docker-compose.yml.

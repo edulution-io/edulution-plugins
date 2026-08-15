@@ -1,0 +1,78 @@
+# edulution mail auf Stalwart.
+#
+# Die zweite Möglichkeit derselben App: Postfächer, Kalender und Kontakte bleiben dieselbe
+# Oberfläche, nur der Mailserver darunter ist ein anderer. Der Installer lädt diesen Ordner,
+# wenn im Anlagedialog "Stalwart" gewählt wurde.
+#
+# Nach dem Anlegen ruft edulution-api die Provisionierung selbst: Domain, Dienstkonto,
+# API-Schlüssel und DKIM entstehen dort, einschließlich des Neustarts, den Stalwart zum
+# Verlassen des Bootstrap-Modus zwingend braucht. Niemand muss ein Secret abschreiben.
+#
+# <IN_SPITZEN_KLAMMERN> fragt der Installer ab. ${IN_GESCHWEIFTEN} füllt edulution-api.
+
+services:
+  edulution-stalwart:
+    # Auf die Minor-Version gepinnt, nicht auf latest: v0.16 hat die Management-API gegenüber
+    # v0.15 vollständig ersetzt. Ein unbeabsichtigter Versionssprung bricht Provisionierung
+    # und Abgleich.
+    image: stalwartlabs/stalwart:v0.16
+    container_name: edulution-stalwart
+    restart: unless-stopped
+    ports:
+      # Die Container-Ports müssen zu den Listenern passen, die Stalwart nach dem Bootstrap
+      # tatsächlich anlegt. Auf 143 gibt es KEINEN — ein Mapping dorthin nimmt Verbindungen
+      # an und lässt sie fallen, was beim Client wie ein TLS-Fehler aussieht.
+      #
+      # Die Host-Ports stehen als Variable mit Vorgabewert. Solange daneben noch ein
+      # mailcow läuft, sind die Standardports belegt; dann werden sie in der abgelegten
+      # docker-compose.yml unter /srv/docker/edulution-stalwart auf Nebenports gezogen
+      # (10025, 10465, 10587, 10993, 10995, 14190) und der Container neu erzeugt.
+      - "${STALWART_PORT_SMTP:-25}:25"            # SMTP zwischen Servern, keine Anmeldung
+      - "${STALWART_PORT_SUBMISSIONS:-465}:465"   # Submission, implizites TLS
+      - "${STALWART_PORT_SUBMISSION:-587}:587"    # Submission mit STARTTLS, von der Provisionierung nachgerüstet
+      - "${STALWART_PORT_IMAPS:-993}:993"         # IMAPS
+      # POP3 bewirbt Stalwart in Autoconfig und Autodiscover. Ohne dieses Mapping bekommt
+      # ein Mailprogramm einen Server genannt, den es nicht erreicht.
+      - "${STALWART_PORT_POP3S:-995}:995"         # POP3S
+      - "${STALWART_PORT_MANAGESIEVE:-4190}:4190" # ManageSieve
+    environment:
+      TZ: ${TZ:-Europe/Berlin}
+      # Die Adresse, der JMAP- und DAV-Clients folgen. Sie muss VOM CLIENT AUS erreichbar
+      # sein, nicht nur vom Server — sonst laufen alle Aufrufe ins Leere, obwohl die
+      # Anmeldung funktioniert.
+      STALWART_PUBLIC_URL: https://<EDULUTION_MAIL_HOSTNAME>
+      # Pinnt die Bootstrap-Zugangsdaten, statt ein Zufallspasswort ins Log zu schreiben.
+      # Nur so kann die Provisionierung sich überhaupt anmelden. edulution-api erzeugt das
+      # Passwort beim Anlegen und liest es beim Provisionieren aus dieser Datei zurück.
+      STALWART_RECOVERY_ADMIN: admin:${STALWART_ADMIN_PASSWORD}
+    volumes:
+      # Zwei getrennte Pfade, wie vom Image erwartet. /opt/stalwart wird NICHT verwendet —
+      # dieser Pfad stammt aus veralteten Anleitungen.
+      - /srv/docker/edulution-stalwart/etc:/etc/stalwart
+      - /srv/docker/edulution-stalwart/data:/var/lib/stalwart
+
+  edulution-stalwart-sync:
+    image: ghcr.io/edulution-io/edulution-mail/stalwart-sync:latest
+    container_name: edulution-stalwart-sync
+    restart: unless-stopped
+    command: ["python", "sync/sync.py"]
+    environment:
+      TZ: ${TZ:-Europe/Berlin}
+      # Containerintern, nicht die öffentliche Adresse: Der Abgleich läuft im selben Netz.
+      STALWART_URL: http://edulution-stalwart:8080
+      STALWART_API_USER: edulution-api@<EDULUTION_MAIL_DOMAIN>
+      # Derselbe Wert, den die Provisionierung dem Dienstkonto setzt. Würde er hier fehlen,
+      # erzeugte die Provisionierung ein eigenes — und der Abgleich meldete sich nicht mehr
+      # an, und zwar erst Minuten später, wenn niemand mehr an die Einrichtung denkt.
+      STALWART_API_KEY: ${STALWART_API_PASSWORD}
+      MAIL_DOMAIN: <EDULUTION_MAIL_DOMAIN>
+      KEYCLOAK_SERVER_URL: ${KEYCLOAK_API}
+      KEYCLOAK_REALM: ${KEYCLOAK_EDU_UI_REALM:-edulution}
+      KEYCLOAK_CLIENT_ID: edu-stalwart-sync
+      KEYCLOAK_SECRET_KEY: ${KEYCLOAK_EDU_STALWART_SYNC_SECRET}
+      GROUPS_TO_SYNC: role-schooladministrator,role-teacher,role-student
+      # Löschen bleibt aus, bis jemand es bewusst einschaltet. Ein Abgleich, der beim ersten
+      # Lauf gegen eine halb gefüllte Keycloak-Instanz läuft, nähme sonst Postfächer mit.
+      DELETE_ENABLED: "0"
+    depends_on:
+      - edulution-stalwart
