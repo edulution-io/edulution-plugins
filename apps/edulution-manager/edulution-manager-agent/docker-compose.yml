@@ -4,10 +4,11 @@ services:
     restart: always
     container_name: edulution-manager-agent
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run:/host/var/run:ro
       - /srv/docker:/srv/docker
     environment:
       EDU_MANAGER_INSTALL_TOKEN: <EDU_MANAGER_INSTALL_TOKEN>
+      DOCKER_HOST: unix:///host/var/run/docker.sock
     networks:
       - edulution-ui_default
 
