@@ -5,10 +5,14 @@ services:
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
+      # Lets edulution-wireguard route the networks behind satellites (sites)
+      # on the host, so the linuxmuster server can answer their clients.
+      - SYS_ADMIN
     restart: always
     volumes:
       - /srv/docker/edulution-ui/data/apps/wireguard:/etc/wireguard
       - /lib/modules:/lib/modules
+      - /proc/1/ns/net:/run/edulution/hostnet:ro
     environment:
       EDU_WG_IPNETWORK: <EDU_WG_IPNETWORK>
       EDU_WG_ADDRESS: <EDU_WG_ADDRESS>
