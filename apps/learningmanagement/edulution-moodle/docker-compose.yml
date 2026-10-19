@@ -47,7 +47,7 @@ services:
       EDULUTION_KEYCLOAK_CLIENT_ID: ${KEYCLOAK_MOODLE_CLIENT_ID}
       EDULUTION_KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_MOODLE_CLIENT_SECRET}
       EDULUTION_KEYCLOAK_SYNC_ENABLED: "true"
-      # Direkt zu Keycloak: Traefik gibt /auth/admin nicht fuer Docker-Netze frei.
+      # Bypasses Traefik, which does not serve /auth/admin to Docker networks.
       EDULUTION_KEYCLOAK_API_URL: http://edu-keycloak:8080/auth
       EDULUTION_VERIFY_SSL: "true"
     volumes:

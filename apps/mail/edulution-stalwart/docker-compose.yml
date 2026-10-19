@@ -85,7 +85,7 @@ services:
       # Grundlage des Deaktivierungszählers. Ohne die Angabe schreibt der Abgleich nach
       # /srv/docker/edulution-mail - dem Pfad der mailcow-Installation.
       STALWART_PATH: /var/lib/edulution-sync
-      # Direkt zu Keycloak: Traefik gibt /auth/admin nicht fuer Docker-Netze frei.
+      # Bypasses Traefik, which does not serve /auth/admin to Docker networks.
       KEYCLOAK_SERVER_URL: http://edu-keycloak:8080/auth/
       KEYCLOAK_CLIENT_ID: edu-stalwart-sync
       KEYCLOAK_SECRET_KEY: ${KEYCLOAK_EDU_STALWART_SYNC_SECRET}
