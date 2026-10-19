@@ -11,5 +11,7 @@ services:
       DOMAIN_QUOTA: 103809024
       MAILCOW_PATH: /srv/docker/edulution-mail
       KEYCLOAK_SECRET_KEY: ${KEYCLOAK_EDU_MAILCOW_SYNC_SECRET}
+      # Bypasses Traefik, which does not serve /auth/admin to Docker networks.
+      KEYCLOAK_SERVER_URL: http://edu-keycloak:8080/auth/
       MAILCOW_BRANCH: legacy
       MAILCOW_API_TOKEN: ${MAILCOW_API_TOKEN}
