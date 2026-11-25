@@ -31,6 +31,7 @@ services:
       MYSQL_PASSWORD: ${EDULUTION_GUACAMOLE_MYSQL_PASSWORD}
       TOTP_ENABLED: "false"
       QUICKCONNECT_ENABLED: "true"
+      QUICKCONNECT_DENIED_PARAMETERS: "recording-path,recording-name,create-recording-path,recording-write-existing,recording-exclude-output,recording-exclude-mouse,recording-exclude-touch,recording-include-keys,typescript-path,typescript-name,create-typescript-path,typescript-write-existing,enable-drive,drive-name,drive-path,create-drive-path,enable-sftp,sftp-hostname,sftp-host-key,sftp-port,sftp-timeout,sftp-username,sftp-password,sftp-private-key,sftp-passphrase,sftp-public-key,sftp-directory,sftp-root-directory,sftp-server-alive-interval,sftp-disable-download,sftp-disable-upload,wol-send-packet,wol-mac-addr,wol-broadcast-addr,wol-udp-port,wol-wait-time,gateway-hostname,gateway-port,gateway-domain,gateway-username,gateway-password,dest-host,dest-port,reverse-connect,listen-timeout,audio-servername"
     depends_on:
       - edulution-guacamoledb
       - edulution-guacd
