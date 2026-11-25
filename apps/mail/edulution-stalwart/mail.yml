@@ -96,7 +96,7 @@ http:
           # diesem Zeitpunkt selbstsigniert.
           - url: http://edulution-stalwart:8080/
 
-# Kein TCP-Router für IMAP, anders als bei mailcow: Stalwart hat KEINEN Listener auf 143.
-# Ein Router dorthin nähme Verbindungen an und ließe sie fallen — beim Client sieht das
-# nach einem TLS-Fehler aus und führt lange in die Irre. IMAPS erreichen die Clients über
-# den Host-Port 993 aus der docker-compose.yml.
+# Kein TCP-Router für IMAP oder POP3: Die Clients erreichen Stalwart direkt über die
+# Host-Ports der docker-compose.yml, IMAP auf 143 (STARTTLS) und 993, POP3 auf 110
+# (STARTTLS) und 995. Die Listener auf 143 und 110 legt erst die Provisionierung von
+# edulution-api an; vorher nähme ein Port dort Verbindungen an und ließe sie fallen.

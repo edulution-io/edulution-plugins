@@ -19,22 +19,28 @@ services:
     container_name: edulution-stalwart
     restart: unless-stopped
     ports:
-      # Die Container-Ports müssen zu den Listenern passen, die Stalwart nach dem Bootstrap
-      # tatsächlich anlegt. Auf 143 gibt es KEINEN — ein Mapping dorthin nimmt Verbindungen
-      # an und lässt sie fallen, was beim Client wie ein TLS-Fehler aussieht.
+      # Die Container-Ports müssen zu den Listenern passen, die Stalwart tatsächlich hat. Der
+      # Bootstrap legt 587, 143 und 110 NICHT an; die Provisionierung von edulution-api
+      # rüstet sie mit STARTTLS nach. Ein Mapping auf einen Port ohne Listener nimmt
+      # Verbindungen an und lässt sie fallen, was beim Client wie ein TLS-Fehler aussieht.
       #
       # Feste Host-Ports. Solange daneben noch ein mailcow läuft, sind sie belegt; dann
       # werden sie in der abgelegten docker-compose.yml unter /srv/docker/edulution-stalwart
-      # auf Nebenports gezogen (10025, 10465, 10587, 10993, 10995, 14190) und der Container
-      # neu erzeugt. Eine Variable mit Vorgabewert (${PORT:-25}) geht hier NICHT: Der
-      # Installer trennt Host- und Container-Port am Doppelpunkt, bevor er Variablen auflöst.
+      # auf Nebenports gezogen (10025, 10465, 10587, 10143, 10993, 10110, 10995, 14190) und
+      # der Container neu erzeugt. Eine Variable mit Vorgabewert (${PORT:-25}) geht hier
+      # NICHT: Der Installer trennt Host- und Container-Port am Doppelpunkt, bevor er
+      # Variablen auflöst.
       - "25:25"      # SMTP zwischen Servern, keine Anmeldung
       - "465:465"    # Submission, implizites TLS
       - "587:587"    # Submission mit STARTTLS, von der Provisionierung nachgerüstet
+      # mailcow bedient IMAP mit STARTTLS auf 143 und POP3 auf 110. Mailprogramme, die so
+      # eingerichtet sind, erreichen nach dem Umzug sonst keinen Server.
+      - "143:143"    # IMAP mit STARTTLS, von der Provisionierung nachgerüstet
       - "993:993"    # IMAPS
       # POP3 bewirbt Stalwart in Autoconfig und Autodiscover. Ohne dieses Mapping bekommt
       # ein Mailprogramm einen Server genannt, den es nicht erreicht.
       - "995:995"    # POP3S
+      - "110:110"    # POP3 mit STARTTLS, von der Provisionierung nachgerüstet
       - "4190:4190"  # ManageSieve
     environment:
       TZ: ${TZ:-Europe/Berlin}
