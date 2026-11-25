@@ -1,5 +1,5 @@
-# version: v1.0
-# updated: 2026-08-15T00:00:00Z
+# version: v1.1
+# updated: 2026-11-25T00:00:00Z
 
 # Traefik-Routen für edulution mail auf Stalwart.
 #
@@ -53,6 +53,23 @@ http:
       entryPoints:
         - websecure
       tls: {}
+
+    # Exchange protocols of Stalwart 1.2: ActiveSync for phones (iOS Mail, Gmail, Samsung
+    # Email), EWS for Outlook for Mac and Apple Mail, MAPI over HTTP for classic Outlook for
+    # Windows, the offline address book, and Autodiscover on the main host, where Outlook
+    # and phones ask first. Stalwart matches these segments case-insensitively, so the rule
+    # does too. No buffering middleware: an ActiveSync Ping and EWS streaming notifications
+    # hold the response open until something changes, and a buffer would hold it back.
+    # Stalwart answers only while x:Exchange is enabled; otherwise these paths return 404.
+    edulution-stalwart-exchange:
+      rule: PathRegexp(`(?i)^/(microsoft-server-activesync|ews|mapi|oab|autodiscover)(/|$)`)
+      service: edulution-stalwart
+      entryPoints:
+        - websecure
+      tls: {}
+      priority: 3000
+      middlewares:
+        - stalwart-headers
 
   middlewares:
     stalwart-headers:
